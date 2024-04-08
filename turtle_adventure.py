@@ -2,6 +2,7 @@
 The turtle_adventure module maintains all classes related to the Turtle's
 adventure game.
 """
+import random
 from turtle import RawTurtle
 from gamelib import Game, GameElement
 
@@ -248,7 +249,30 @@ class Enemy(TurtleGameElement):
 # * Define enemy's update logic in the update() method
 # * Check whether the player hits this enemy, then call the
 #   self.game.game_over_lose() method in the TurtleAdventureGame class.
-class DemoEnemy(Enemy):
+# class DemoEnemy(Enemy):
+#     """
+#     Demo enemy
+#     """
+#
+#     def __init__(self,
+#                  game: "TurtleAdventureGame",
+#                  size: int,
+#                  color: str):
+#         super().__init__(game, size, color)
+#
+#     def create(self) -> None:
+#         pass
+#
+#     def update(self) -> None:
+#         pass
+#
+#     def render(self) -> None:
+#         pass
+#
+#     def delete(self) -> None:
+#         pass
+
+class RandomWalkEnemy(Enemy):
     """
     Demo enemy
     """
@@ -258,15 +282,29 @@ class DemoEnemy(Enemy):
                  size: int,
                  color: str):
         super().__init__(game, size, color)
+        self.ran_x = 1
+        self.ran_y = 1
 
     def create(self) -> None:
-        pass
+        self.__id = self.canvas.create_oval(
+            0, 0, self.size/2, self.size/2, fill=self.color)
 
     def update(self) -> None:
-        pass
+        # rand_x = random.choice([-10, 0, 10])
+        # rand_y = random.choice([-10, 0, 10])
+        # self.x += rand_x
+        # self.y += rand_y
+
+        if ( (self.x < self.game.player.x < self.x + self.size) and
+             (self.y < self.game.player.y < self.y + self.size) ):
+            self.game.game_over_lose()
 
     def render(self) -> None:
-        pass
+        self.canvas.coords(self.__id,
+                           self.x,
+                           self.y,
+                           self.x+self.size,
+                           self.y+self.size)
 
     def delete(self) -> None:
         pass
@@ -311,7 +349,7 @@ class EnemyGenerator:
         """
         Create a new enemy, possibly based on the game level
         """
-        new_enemy = DemoEnemy(self.__game, 20, "red")
+        new_enemy = RandomWalkEnemy(self.__game, 20, "red")
         new_enemy.x = 100
         new_enemy.y = 100
         self.game.add_element(new_enemy)
