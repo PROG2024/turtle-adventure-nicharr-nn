@@ -274,7 +274,7 @@ class Enemy(TurtleGameElement):
 
 class RandomWalkEnemy(Enemy):
     """
-    Demo enemy
+    This enemies will walk randomly on the screen.
     """
 
     def __init__(self,
@@ -309,6 +309,85 @@ class RandomWalkEnemy(Enemy):
     def delete(self) -> None:
         pass
 
+class ChasingEnemy(Enemy):
+    """
+    This enemies will try chasing the player.
+    """
+
+    def __init__(self,
+                 game: "TurtleAdventureGame",
+                 size: int,
+                 color: str):
+        super().__init__(game, size, color)
+
+    def create(self) -> None:
+        self.__id = self.canvas.create_oval(
+            0, 0, self.size/2, self.size/2, fill="blue")
+
+    def update(self) -> None:
+        if self.x < self.game.player.x:
+            self.x += random.randrange(1, 3)
+        elif self.x > self.game.player.x:
+            self.x -= random.randrange(1, 3)
+
+        if self.y < self.game.player.y:
+            self.y += random.randrange(1, 3)
+        elif self.y > self.game.player.y:
+            self.y -= random.randrange(1, 3)
+
+        if ( (self.x < self.game.player.x < self.x + self.size) and
+             (self.y < self.game.player.y < self.y + self.size) ):
+            self.game.game_over_lose()
+
+    def render(self) -> None:
+        self.canvas.coords(self.__id,
+                           self.x,
+                           self.y,
+                           self.x+self.size,
+                           self.y+self.size)
+
+    def delete(self) -> None:
+        pass
+
+class ChasingEnemy(Enemy):
+    """
+    This enemies will try chasing the player.
+    """
+
+    def __init__(self,
+                 game: "TurtleAdventureGame",
+                 size: int,
+                 color: str):
+        super().__init__(game, size, color)
+
+    def create(self) -> None:
+        self.__id = self.canvas.create_oval(
+            0, 0, self.size/2, self.size/2, fill="blue")
+
+    def update(self) -> None:
+        if self.x < self.game.player.x:
+            self.x += random.randrange(1, 3)
+        elif self.x > self.game.player.x:
+            self.x -= random.randrange(1, 3)
+
+        if self.y < self.game.player.y:
+            self.y += random.randrange(1, 3)
+        elif self.y > self.game.player.y:
+            self.y -= random.randrange(1, 3)
+
+        if ( (self.x < self.game.player.x < self.x + self.size) and
+             (self.y < self.game.player.y < self.y + self.size) ):
+            self.game.game_over_lose()
+
+    def render(self) -> None:
+        self.canvas.coords(self.__id,
+                           self.x,
+                           self.y,
+                           self.x+self.size,
+                           self.y+self.size)
+
+    def delete(self) -> None:
+        pass
 
 # TODO
 # Complete the EnemyGenerator class by inserting code to generate enemies
