@@ -365,7 +365,8 @@ class FencingEnemy(Enemy):
 
 class RandomAppearEnemy(Enemy):
     """
-    This enemies will appear randomly on the screen, but it will not move and always stay in the same place.
+    This enemies will appear randomly on the screen,
+    but it will not move and always stay in the same place.
     """
 
     def __init__(self,
