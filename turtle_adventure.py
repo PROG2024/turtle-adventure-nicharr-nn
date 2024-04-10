@@ -282,18 +282,21 @@ class RandomWalkEnemy(Enemy):
                  size: int,
                  color: str):
         super().__init__(game, size, color)
-        self.ran_x = 1
-        self.ran_y = 1
+        self.ran_x = random.randint(-3, 3)
+        self.ran_y = random.randint(-3, 3)
 
     def create(self) -> None:
         self.__id = self.canvas.create_oval(
             0, 0, self.size/2, self.size/2, fill=self.color)
 
     def update(self) -> None:
-        # rand_x = random.choice([-10, 0, 10])
-        # rand_y = random.choice([-10, 0, 10])
-        # self.x += rand_x
-        # self.y += rand_y
+        self.x += self.ran_x
+        self.y += self.ran_y
+
+        if self.x < 0 or self.x > self.game.screen_width:
+            self.ran_x = -self.ran_x
+        if self.y < 0 or self.y > self.game.screen_height:
+            self.ran_y = -self.ran_y
 
         if ( (self.x < self.game.player.x < self.x + self.size) and
              (self.y < self.game.player.y < self.y + self.size) ):
@@ -349,9 +352,9 @@ class ChasingEnemy(Enemy):
     def delete(self) -> None:
         pass
 
-class ChasingEnemy(Enemy):
+class FencingEnemy(Enemy):
     """
-    This enemies will try chasing the player.
+    This enemies will walk around the home in a square-like pattern.
     """
 
     def __init__(self,
@@ -365,15 +368,7 @@ class ChasingEnemy(Enemy):
             0, 0, self.size/2, self.size/2, fill="blue")
 
     def update(self) -> None:
-        if self.x < self.game.player.x:
-            self.x += random.randrange(1, 3)
-        elif self.x > self.game.player.x:
-            self.x -= random.randrange(1, 3)
 
-        if self.y < self.game.player.y:
-            self.y += random.randrange(1, 3)
-        elif self.y > self.game.player.y:
-            self.y -= random.randrange(1, 3)
 
         if ( (self.x < self.game.player.x < self.x + self.size) and
              (self.y < self.game.player.y < self.y + self.size) ):
@@ -428,10 +423,17 @@ class EnemyGenerator:
         """
         Create a new enemy, possibly based on the game level
         """
-        new_enemy = RandomWalkEnemy(self.__game, 20, "red")
-        new_enemy.x = 100
-        new_enemy.y = 100
-        self.game.add_element(new_enemy)
+        for i in range(random.randint(2, 5)):
+            new_enemy1 = RandomWalkEnemy(self.__game, 20, "red")
+            new_enemy1.x = random.randrange(0, 400)
+            new_enemy1.y = random.randrange(0, 300)
+            self.game.add_element(new_enemy1)
+
+        for i in range(random.randint(2, 5)):
+            new_enemy2 = ChasingEnemy(self.__game, 20, "blue")
+            new_enemy2.x = random.randrange(0, 400)
+            new_enemy2.y = random.randrange(0, 300)
+            self.game.add_element(new_enemy2)
 
 
 class TurtleAdventureGame(Game): # pylint: disable=too-many-ancestors
