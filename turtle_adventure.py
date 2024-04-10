@@ -329,14 +329,14 @@ class ChasingEnemy(Enemy):
 
     def update(self) -> None:
         if self.x < self.game.player.x:
-            self.x += random.randrange(1, 3)
+            self.x += random.randrange(1, 5)
         elif self.x > self.game.player.x:
-            self.x -= random.randrange(1, 3)
+            self.x -= random.randrange(1, 5)
 
         if self.y < self.game.player.y:
-            self.y += random.randrange(1, 3)
+            self.y += random.randrange(1, 5)
         elif self.y > self.game.player.y:
-            self.y -= random.randrange(1, 3)
+            self.y -= random.randrange(1, 5)
 
         if ( (self.x < self.game.player.x < self.x + self.size) and
              (self.y < self.game.player.y < self.y + self.size) ):
@@ -365,13 +365,21 @@ class FencingEnemy(Enemy):
 
     def create(self) -> None:
         self.__id = self.canvas.create_oval(
-            0, 0, self.size/2, self.size/2, fill="blue")
+            0, 0, self.size/2, self.size/2, fill=self.color)
 
     def update(self) -> None:
+        if self.game.home.x - (30 + self.size) == self.x and self.y > self.game.home.y - (30 + self.size):
+            self.y -= 1
+        elif (self.game.home.x + 30 > self.x >= self.game.home.x - (30 + self.size)
+              and self.y == self.game.home.y - (30 + self.size)):
+            self.x += 1
+        elif self.y == self.game.home.y + 30 and self.x <= self.game.home.x + 30:
+            self.x -= 1
+        else:
+            self.y += 1
 
-
-        if ( (self.x < self.game.player.x < self.x + self.size) and
-             (self.y < self.game.player.y < self.y + self.size) ):
+        if ((self.x < self.game.player.x < self.x + self.size) and
+             (self.y < self.game.player.y < self.y + self.size)):
             self.game.game_over_lose()
 
     def render(self) -> None:
@@ -401,8 +409,10 @@ class EnemyGenerator:
     def __init__(self, game: "TurtleAdventureGame", level: int):
         self.__game: TurtleAdventureGame = game
         self.__level: int = level
+        self.random_walk_enemies = []
+        self.chasing_enemies = []
+        self.fencing_enemies = []
 
-        # example
         self.__game.after(100, self.create_enemy)
 
     @property
@@ -423,17 +433,32 @@ class EnemyGenerator:
         """
         Create a new enemy, possibly based on the game level
         """
-        for i in range(random.randint(2, 5)):
-            new_enemy1 = RandomWalkEnemy(self.__game, 20, "red")
-            new_enemy1.x = random.randrange(0, 400)
-            new_enemy1.y = random.randrange(0, 300)
-            self.game.add_element(new_enemy1)
+        if len(self.random_walk_enemies) < 1:
+            for i in range(random.randint(2, 5)):
+                new_enemy1 = RandomWalkEnemy(self.__game, 20, "red")
+                new_enemy1.x = random.randrange(0, 400)
+                new_enemy1.y = random.randrange(0, 300)
+                self.game.add_element(new_enemy1)
+                self.random_walk_enemies.append(new_enemy1)
 
-        for i in range(random.randint(2, 5)):
-            new_enemy2 = ChasingEnemy(self.__game, 20, "blue")
-            new_enemy2.x = random.randrange(0, 400)
-            new_enemy2.y = random.randrange(0, 300)
-            self.game.add_element(new_enemy2)
+        if len(self.chasing_enemies) < 1:
+            for i in range(random.randint(2, 3)):
+                new_enemy2 = ChasingEnemy(self.__game, 20, "blue")
+                new_enemy2.x = random.randrange(100, 400)
+                new_enemy2.y = random.randrange(100, 300)
+                self.game.add_element(new_enemy2)
+                self.chasing_enemies.append(new_enemy2)
+
+        if len(self.fencing_enemies) < 4:
+            new_enemy3 = FencingEnemy(self.__game, 20, "pink")
+            new_enemy3.x = self.__game.home.x+30
+            new_enemy3.y = self.__game.home.y+30
+            self.__game.add_element(new_enemy3)
+            self.fencing_enemies.append(new_enemy3)
+
+        self.__game.after(2000, self.create_enemy)
+
+
 
 
 class TurtleAdventureGame(Game): # pylint: disable=too-many-ancestors
